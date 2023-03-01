@@ -1,0 +1,4 @@
+python -m venv sc
+pip install -e . --no-cache-dir
+python3 -m pip install --upgrade pip
+uvicorn app.main:app --reload
