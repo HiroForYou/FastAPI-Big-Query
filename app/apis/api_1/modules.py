@@ -1,22 +1,22 @@
 from __future__ import annotations
+
 import logging
 
-from app.apis.big_query.connection import get_client_connection
-from app.apis.big_query.utils import charify
-from app.core.config import PROJECT_ID, DATASET_NAME
-
+from app.apis.api_1.connection import get_client_connection
+from app.apis.api_1.utils import charify
+from app.core.config import DATASET_NAME, PROJECT_ID
 
 logger = logging.getLogger(__name__)
 
 
-def create_sensor(item_encoded: dict) -> list:
+def create_module(item_encoded: dict) -> list:
     connection = get_client_connection()
     keys, values = item_encoded.keys(), list(item_encoded.values())
     values = list(map(charify, values))
     keys_string, values_string = ", ".join(keys), ", ".join(values)
-    query = f"""INSERT INTO `{PROJECT_ID}.{DATASET_NAME}.sensors` (id, {keys_string}, createdAt, updatedAt, deletedAt) VALUES (GENERATE_UUID(), {values_string}, CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP(), NULL);"""
+    query = f"""INSERT INTO `{PROJECT_ID}.{DATASET_NAME}.modules` (id, {keys_string}, createdAt, updatedAt, deletedAt) VALUES (GENERATE_UUID(), {values_string}, CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP(), NULL);"""
 
-    logger.info("Creating new sensor..")
+    logger.info("Creating new module..")
     logger.info("query>> %s", query)
     try:
         query_job = connection.query(query)
@@ -28,12 +28,12 @@ def create_sensor(item_encoded: dict) -> list:
         raise err
 
 
-def get_last_n_sensors(n: int) -> list:
+def get_last_n_modules(n: int) -> list:
     connection = get_client_connection()
     query = f"""
-        SELECT * FROM `{PROJECT_ID}.{DATASET_NAME}.sensors` ORDER BY createdAt DESC LIMIT {n}
+        SELECT * FROM `{PROJECT_ID}.{DATASET_NAME}.modules` ORDER BY createdAt DESC LIMIT {n}
     """
-    logger.info("Getting the last %d data from sensors..", n)
+    logger.info("Getting the last %d data from modules..", n)
     logger.info("query>> %s", query)
 
     try:
@@ -52,12 +52,12 @@ def get_last_n_sensors(n: int) -> list:
         raise err
 
 
-def get_initial_n_sensors(n: int) -> list:
+def get_initial_n_modules(n: int) -> list:
     connection = get_client_connection()
     query = f"""
-        SELECT * FROM `{PROJECT_ID}.{DATASET_NAME}.sensors` ORDER BY createdAt ASC LIMIT {n}
+        SELECT * FROM `{PROJECT_ID}.{DATASET_NAME}.modules` ORDER BY createdAt ASC LIMIT {n}
     """
-    logger.info("Getting the first %d data from sensors..", n)
+    logger.info("Getting the first %d data from modules..", n)
     logger.info("query>> %s", query)
 
     try:
@@ -76,16 +76,16 @@ def get_initial_n_sensors(n: int) -> list:
         raise err
 
 
-def update_sensor_by_id(id: str, item_encoded: dict) -> list:
+def update_module_by_id(id: str, item_encoded: dict) -> list:
     connection = get_client_connection()
     keys, values = item_encoded.keys(), item_encoded.values()
     values = list(map(charify, values))
     item_string = [f"{key}={value}" for key, value in zip(keys, values)]
     item_string = ", ".join(item_string)
     query = f"""
-        UPDATE `{PROJECT_ID}.{DATASET_NAME}.sensors` SET {item_string}, updatedAt=CURRENT_TIMESTAMP() WHERE id='{id}'
+        UPDATE `{PROJECT_ID}.{DATASET_NAME}.modules` SET {item_string}, updatedAt=CURRENT_TIMESTAMP() WHERE id='{id}'
     """
-    logger.info("Updating sensor with id %s..", id)
+    logger.info("Updating module with id %s..", id)
     logger.info("query>> %s", query)
     try:
         query_job = connection.query(query)
@@ -97,15 +97,15 @@ def update_sensor_by_id(id: str, item_encoded: dict) -> list:
         raise err
 
 
-def remove_sensor_by_id(id: str) -> list:
+def remove_module_by_id(id: str) -> list:
     connection = get_client_connection()
     # query = f"""
-    #    DELETE FROM `{PROJECT_ID}.{DATASET_NAME}.sensors` WHERE id='{id}'
+    #    DELETE FROM `{PROJECT_ID}.{DATASET_NAME}.modules` WHERE id='{id}'
     # """
     query = f"""
-        UPDATE `{PROJECT_ID}.{DATASET_NAME}.sensors` SET deletedAt=CURRENT_TIMESTAMP() WHERE id='{id}'
+        UPDATE `{PROJECT_ID}.{DATASET_NAME}.modules` SET deletedAt=CURRENT_TIMESTAMP() WHERE id='{id}'
     """
-    logger.info("Removing sensor with id %s..", id)
+    logger.info("Removing module with id %s..", id)
     logger.info("query>> %s", query)
     try:
         query_job = connection.query(query)
@@ -118,5 +118,5 @@ def remove_sensor_by_id(id: str) -> list:
 
 
 if __name__ == "__main__":
-    print(get_last_n_sensors(1))
-    print(get_initial_n_sensors(3))
+    print(get_last_n_modules(1))
+    print(get_initial_n_modules(3))

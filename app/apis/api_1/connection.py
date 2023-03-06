@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 import logging
 
 from google.cloud import bigquery
@@ -12,7 +13,7 @@ logger = logging.getLogger(__name__)
 def get_client_connection():
     key_json = get_keyfile_dict()
     client = None
-    logger.info("Trying to connect to Big Query..")
+    logger.info("Trying to connect to API 1..")
     try:
         credentials = service_account.Credentials.from_service_account_info(key_json)
         client = bigquery.Client(
@@ -20,9 +21,9 @@ def get_client_connection():
             project=credentials.project_id,
         )
 
-        logger.info("Big Query: Success Connected")
+        logger.info("API 1: Success Connected")
     except Exception as err:
-        logging.error("An error occurred while trying to connect to Big Query: %s", err)
+        logging.error("An error occurred while trying to connect to API 1: %s", err)
         raise err
 
     return client

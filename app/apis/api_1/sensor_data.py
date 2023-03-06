@@ -1,10 +1,10 @@
 from __future__ import annotations
+
 import logging
 
-from app.apis.big_query.connection import get_client_connection
-from app.apis.big_query.utils import charify
-from app.core.config import PROJECT_ID, DATASET_NAME
-
+from app.apis.api_1.connection import get_client_connection
+from app.apis.api_1.utils import charify
+from app.core.config import DATASET_NAME, PROJECT_ID
 
 logger = logging.getLogger(__name__)
 

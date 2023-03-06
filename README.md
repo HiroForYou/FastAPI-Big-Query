@@ -6,7 +6,7 @@ tags:
   - python
 ---
 
-# FastAPI Big Query
+# FastAPI API 1
 
 [![Deploy on Railway](https://railway.app/button.svg)](https://railway.app/new/template/-NvLj4?referralCode=milo)
 
