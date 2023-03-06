@@ -14,3 +14,10 @@ def rand_gen(num: int) -> dict[str, int]:
         "random_second": random.randint(0, num),
     }
     return d
+
+
+def charify(item):
+    if type(item) is str:
+        return f"'{item}'"
+    else:
+        return str(item)

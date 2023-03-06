@@ -15,7 +15,6 @@ credentials = service_account.Credentials.from_service_account_file(
 ) """
 
 
-
 # Alternatively, use service_account.Credentials.from_service_account_info()
 # to set credentials directly via a json object rather than set a filepath
 # TODO(developer): Set key_json to the content of the service account key file.
@@ -32,7 +31,7 @@ client = bigquery.Client(
 query = """
     SELECT * FROM `smartcity-379119.smart_city_dataset.sensorData` LIMIT 3
 """
-query_job = client.query(query)  # Make an API request.
+query_job = connection.query(query)  # Make an API request.
 
 print("The query data:")
 for row in query_job:

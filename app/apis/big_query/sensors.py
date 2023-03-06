@@ -9,14 +9,14 @@ from app.core.config import PROJECT_ID, DATASET_NAME
 logger = logging.getLogger(__name__)
 
 
-def create_sensor_data(item_encoded: dict) -> list:
+def create_sensor(item_encoded: dict) -> list:
     connection = get_client_connection()
     keys, values = item_encoded.keys(), list(item_encoded.values())
     values = list(map(charify, values))
     keys_string, values_string = ", ".join(keys), ", ".join(values)
-    query = f"""INSERT INTO `{PROJECT_ID}.{DATASET_NAME}.sensorData` (id, {keys_string}, createdAt) VALUES (GENERATE_UUID(), {values_string}, CURRENT_TIMESTAMP());"""
+    query = f"""INSERT INTO `{PROJECT_ID}.{DATASET_NAME}.sensors` (id, {keys_string}, createdAt, updatedAt, deletedAt) VALUES (GENERATE_UUID(), {values_string}, CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP(), NULL);"""
 
-    logger.info("Creating new sensor data..")
+    logger.info("Creating new sensor..")
     logger.info("query>> %s", query)
     try:
         query_job = connection.query(query)
@@ -28,10 +28,10 @@ def create_sensor_data(item_encoded: dict) -> list:
         raise err
 
 
-def get_last_n_sensor_data(n: int) -> list:
+def get_last_n_sensors(n: int) -> list:
     connection = get_client_connection()
     query = f"""
-        SELECT * FROM `{PROJECT_ID}.{DATASET_NAME}.sensorData` ORDER BY createdAt DESC LIMIT {n}
+        SELECT * FROM `{PROJECT_ID}.{DATASET_NAME}.sensors` ORDER BY createdAt DESC LIMIT {n}
     """
     logger.info("Getting the last %d data from sensors..", n)
     logger.info("query>> %s", query)
@@ -52,10 +52,10 @@ def get_last_n_sensor_data(n: int) -> list:
         raise err
 
 
-def get_initial_n_sensor_data(n: int) -> list:
+def get_initial_n_sensors(n: int) -> list:
     connection = get_client_connection()
     query = f"""
-        SELECT * FROM `{PROJECT_ID}.{DATASET_NAME}.sensorData` ORDER BY createdAt ASC LIMIT {n}
+        SELECT * FROM `{PROJECT_ID}.{DATASET_NAME}.sensors` ORDER BY createdAt ASC LIMIT {n}
     """
     logger.info("Getting the first %d data from sensors..", n)
     logger.info("query>> %s", query)
@@ -76,16 +76,16 @@ def get_initial_n_sensor_data(n: int) -> list:
         raise err
 
 
-def update_sensor_data_by_id(id: str, item_encoded: dict) -> list:
+def update_sensor_by_id(id: str, item_encoded: dict) -> list:
     connection = get_client_connection()
     keys, values = item_encoded.keys(), item_encoded.values()
     values = list(map(charify, values))
     item_string = [f"{key}={value}" for key, value in zip(keys, values)]
     item_string = ", ".join(item_string)
     query = f"""
-        UPDATE `{PROJECT_ID}.{DATASET_NAME}.sensorData` SET {item_string} WHERE id='{id}'
+        UPDATE `{PROJECT_ID}.{DATASET_NAME}.sensors` SET {item_string}, updatedAt=CURRENT_TIMESTAMP() WHERE id='{id}'
     """
-    logger.info("Updating sensor data with id %s..", id)
+    logger.info("Updating sensor with id %s..", id)
     logger.info("query>> %s", query)
     try:
         query_job = connection.query(query)
@@ -97,12 +97,15 @@ def update_sensor_data_by_id(id: str, item_encoded: dict) -> list:
         raise err
 
 
-def remove_sensor_data_by_id(id: str) -> list:
+def remove_sensor_by_id(id: str) -> list:
     connection = get_client_connection()
+    # query = f"""
+    #    DELETE FROM `{PROJECT_ID}.{DATASET_NAME}.sensors` WHERE id='{id}'
+    # """
     query = f"""
-        DELETE FROM `{PROJECT_ID}.{DATASET_NAME}.sensorData` WHERE id='{id}'
+        UPDATE `{PROJECT_ID}.{DATASET_NAME}.sensors` SET deletedAt=CURRENT_TIMESTAMP() WHERE id='{id}'
     """
-    logger.info("Removing sensor data with id %s..", id)
+    logger.info("Removing sensor with id %s..", id)
     logger.info("query>> %s", query)
     try:
         query_job = connection.query(query)
@@ -115,5 +118,5 @@ def remove_sensor_data_by_id(id: str) -> list:
 
 
 if __name__ == "__main__":
-    print(get_last_n_sensor_data(1))
-    print(get_initial_n_sensor_data(3))
+    print(get_last_n_sensors(1))
+    print(get_initial_n_sensors(3))

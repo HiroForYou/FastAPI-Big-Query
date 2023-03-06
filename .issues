@@ -1,4 +1,7 @@
-python -m venv sc
+python3 -m venv env
+source env/activate/bin
+env\Scripts\activate.bat
 pip install -e . --no-cache-dir
 python3 -m pip install --upgrade pip
+pip install -r requirements.txt --no-cache-dir
 uvicorn app.main:app --reload

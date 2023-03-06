@@ -21,3 +21,4 @@ tags:
 - Clone locally and install packages with Pip using `pip install -r requirements.txt` or Poetry using `poetry install`
 - Connect to your project using `railway link`
 - Run locally using `uvicorn main:app --reload`
+- Open [http://localhost:8000/docs](http://localhost:8000/docs) in your browser

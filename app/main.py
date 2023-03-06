@@ -3,12 +3,12 @@ from starlette.middleware.cors import CORSMiddleware
 import logging
 import pathlib
 
-from app.routes import views
+from app.routes import view_sensor_data, view_clients, view_modules, view_sensors
 
 
 ROOT = pathlib.Path(__file__).resolve().parent  # app/
 BASE_DIR = ROOT.parent
-LOGDIR_CFG = f'{BASE_DIR}/logging.conf'
+LOGDIR_CFG = f"{BASE_DIR}/logging.conf"
 logging.config.fileConfig(LOGDIR_CFG, disable_existing_loggers=False)
 
 # get root logger
@@ -25,4 +25,16 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-app.include_router(views.router)
+
+@app.get("/")
+async def index() -> dict[str, str]:
+    return {
+        "info": "This is the index page of fastapi-big-query. "
+        "You probably want to go to 'http://<hostname:port>/docs'.",
+    }
+
+
+app.include_router(view_clients.router)
+app.include_router(view_modules.router)
+app.include_router(view_sensors.router)
+app.include_router(view_sensor_data.router)
