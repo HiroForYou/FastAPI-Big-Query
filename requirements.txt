@@ -15,5 +15,3 @@ watchfiles==0.18.1
 websockets==10.4
 google-cloud-bigquery
 google-api-python-client
-black
-pre-commit
